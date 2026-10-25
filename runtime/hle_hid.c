@@ -147,8 +147,15 @@ static void npad_state(u64 out, u32 id, u32 style) {
     if (style == STYLE_GC) {
         if (buttons & 1ull << B_L) lt = 32767;
         if (buttons & 1ull << B_R) rt = 32767;
+#ifdef __APPLE__
+        /* NpadGcState is 0x30 bytes: the triggers right after the attributes (the game reads them at
+         * 0x24 and 0x28: 13.0.5 main+0x3667480, +0x366749c), and nothing past 0x2C */
+        st32(out + 36, (u32)lt); st32(out + 40, (u32)rt);
+        st32(out + 44, 0);
+#else
         st32(out + 40, (u32)lt); st32(out + 44, (u32)rt);
         st32(out + 48, 0);
+#endif
     }
 }
 
